@@ -2,7 +2,6 @@
 
 A full-stack digital restaurant ordering system designed for Italian restaurants.
 
-it allows customers to browse the restaurant menu, select their table, add dishes to a cart, and send their order directly to the kitchen. Kitchen staff can then manage incoming orders through a dedicated kitchen dashboard.
 
 ---
 
@@ -49,12 +48,6 @@ The interface uses an Italian-inspired visual style based on olive, beige, cream
 Each restaurant table can have its own QR code.
 
 When a customer scans the QR code, the table number is automatically included in the URL.
-
-Example:
-
-```text
-https://domain.com/?table=5
-```
 
 The system detects the table number and automatically locks it so the customer cannot accidentally change the table.
 
@@ -272,78 +265,6 @@ The system supports:
 - 🖥️ Desktop screens
 
 The interface automatically adapts to different screen sizes.
-
----
-
-
-## 🌐 Available Pages
-
-### Customer Menu
-
-```text
-/index.html
-```
-
-Example with a table number:
-
-```text
-/index.html?table=5
-```
-
-### Kitchen Dashboard
-
-```text
-/kitchen.html
-```
-
-### QR Code Manager
-
-```text
-/admin-qrcodes.html
-```
-
----
-
-## 🔄 Order Flow
-
-The complete ordering process works as follows:
-
-```text
-Customer
-   │
-   ▼
-Scan Table QR Code
-   │
-   ▼
-Digital Menu
-   │
-   ▼
-Select Food
-   │
-   ▼
-Shopping Cart
-   │
-   ▼
-Submit Order
-   │
-   ▼
-Express Backend
-   │
-   ▼
-Supabase Database
-   │
-   ▼
-Kitchen Dashboard
-   │
-   ▼
-Preparing
-   │
-   ▼
-Ready
-   │
-   ▼
-Completed
-```
 
 ---
 
