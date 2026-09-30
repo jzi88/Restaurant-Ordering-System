@@ -1,193 +1,43 @@
-
-Claude finished the response
-
-const API_BASE = '/api'; let PRODUCTS = []; let CART = {}; let ACTIVE_CATEGORY = 'الكل'; const urlParams = new URLSearchParams(window.location.search); const QR_TABLE_ID = (urlParams.get('table') || '').trim(); let grid = null; let chipsWrap = null; let loadingState = null; let errorS
-
-pasted
-
-
-<!DOCTYPE html> <html lang="ar" dir="rtl"> <head> <meta charset="UTF-8" /> <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <title>Home Made | القائمة</title> <script src="https://cdn.tailwindcss.com"></script> <!-- Google Fonts -->
-
-pasted
-
-
-:root { --cream: #e3d5c9da; --burgundy: #d1c9ca; --burgundy-dark: #35151B; --gray-brown: #e5d2c6; --black: #171516; --black-soft: #35151B; --black-light: #35151B; --cream-light: #a68a7e; --cream-dark: #421b1b; --copper: #6D1824; --copper-dark: #35151B; --c
-
-pasted
-
-وش مشكلة الازرار حقت الكلAppetizersDessertsDrinksPastaRisotto  ماتشتغل؟   
-
-INSERT INTO "public"."products" ("id", "name", "price", "category", "available", "image_url") VALUES (14, 'Margherita Pizza', '35.00', 'Pizza', false, 'https://i.pinimg.com/736x/7e/08/63/7e086381618d3255266df255dc7ae196.jpg'), (24, 'Chicken Alfredo', '46.00', 'Pasta', true, 'https://i.pinimg.com/1200x/a5/75/f1/a575f13ab529fb4e10adddee9bcb4890.jpg'), (27, 'Pesto Pasta', '40.00', 'Pasta', true, 'https://i.pinimg.com/736x/d4/83/a3/d483a35ccf461c536583d31e686dea9a.jpg'), (28, 'Chicken Pesto Pasta', '45.00', 'Pasta', true, 'https://i.pinimg.com/1200x/33/52/4f/33524f6c7a83a75265c225bd7773d63f.jpg'), (34, 'Shrimp Risotto', '58.00', 'Risotto', true, 'https://i.pinimg.com/736x/51/45/f1/5145f1081cbb4158cbe982811b43c017.jpg'), (40, 'Caesar Salad with Chicken', '36.00', 'Appetizers', true, 'https://i.pinimg.com/736x/23/13/a2/2313a2ee7fcd1b495d51fbcc19c84598.jpg'), (42, 'Tiramisu', '25.00', 'Desserts', true, 'https://i.pinimg.com/736x/da/c2/19/dac21970e0145292b4dd9b607bf349d6.jpg'), (48, 'Sparkling Water', '10.00', 'Drinks', true, 'https://i.pinimg.com/1200x/23/a4/f0/23a4f0e145d23700b60ffeabccfe3229.jpg'), (50, 'Soft Drink', '8.00', 'Drinks', true, 'https://i.pinimg.com/736x/76/9f/8b/769f8baa785689025317a8bd00830eef.jpg');
-المشكلة في renderCategories() — الزر يُبنى بهذا الشكل:
-
-js
-onclick="setCategory(${JSON.stringify(category)})"
-JSON.stringify("Pasta") يرجّع "Pasta" بعلامات تنصيص مزدوجة، وهذي تكسر الـ attribute لأنه أصلاً داخل onclick="...". فالـ HTML يصير:
-
-html
-onclick="setCategory("Pasta")"
-المتصفح يقفل الـ attribute عند أول " فيصير onclick="setCategory(" وهذا كود JavaScript غير صالح، فما يشتغل الزر. (زر "الكل" نفس المشكلة، بس ما تلاحظها لأن القسم الافتراضي أصلاً "الكل".)
-
-الحل
-الأفضل تشيل الـ inline onclick وتستخدم event listener، لأن عندك أصلاً data-cat على الزر:
-
-js
-function renderCategories() {
-  if (!chipsWrap) return;
-
-  const categories = [
-    'الكل',
-    ...new Set(
-      PRODUCTS
-        .map(product => (product.category || '').trim())
-        .filter(category => category)
-    )
-  ];
-
-  chipsWrap.innerHTML = categories
-    .map(category => {
-      const safeCategory = escapeHtml(category);
-
-      return `
-        <button
-          type="button"
-          class="chip ${category === ACTIVE_CATEGORY ? 'active' : ''} px-4 py-2 rounded-full text-sm font-bold"
-          data-cat="${safeCategory}"
-        >
-          ${safeCategory}
-        </button>
-      `;
-    })
-    .join('');
-
-  chipsWrap.querySelectorAll('[data-cat]').forEach(button => {
-    button.addEventListener('click', () => {
-      setCategory(button.dataset.cat);
-    });
-  });
-}
-بهذي الطريقة ما تحتاج JSON.stringify ولا تقلق من علامات التنصيص داخل أسماء الأقسام.
-
-ملاحظات إضافية
-منتج Margherita Pizza ما راح يظهر لأن available = false، ومع ذلك قسم Pizza راح يطلع كزر لأنك تبني الأقسام من كل PRODUCTS. لو السيرفر يرجّع المنتجات غير المتوفرة، الضغط على Pizza يعرض "لا توجد أصناف" (أو يعرض المنتج وهو غير متوفر، حسب الـ API). الأفضل تفلتر:
-js
-PRODUCTS = Array.isArray(json.data)
-  ? json.data.filter(p => p.available !== false)
-  : [];
-السعر جاي من قاعدة البيانات كنص ('35.00')، وكودك يتعامل معه بـ Number(...) فهو سليم.
-تأكد أن script.js ينحمّل فعلاً (تبويب Network في المتصفح)، لأن ملفك يستخدم defer والمسار نسبي script.js. لكن بما أن السلة تشتغل عندك على الأغلب، المشكلة فقط في الـ quote الموضحة فوق.
-اعطين التعديل كامل للكود
-
-Created a file, shared files
-هذا ملف script.js كامل بعد التعديل، استبدل به ملفك القديم. ما تحتاج تغيّر شي في index.html ولا styling.css.
-
-التعديلات:
-
-أزرار الأقسام: شلت onclick من renderCategories() وصارت الأزرار تشتغل بـ addEventListener مع data-cat، فما عاد فيه مشكلة علامات التنصيص.
-الأصناف غير المتوفرة: loadProducts() صارت تفلتر available !== false، فقسم Pizza ما يظهر طالما منتجه الوحيد (Margherita) غير متوفر.
-toggleCartMobile: أضفت window.toggleCartMobile = toggleCartMobile احتياطًا لأن الـ HTML يستدعيها من onclick.
-بعد الاستبدال سوّ تحديث قوي للصفحة (Ctrl+Shift+R) عشان المتصفح ما يستخدم النسخة القديمة من الكاش.
-
-
-Script
-JS 
-
-<!DOCTYPE html> <html lang="ar" dir="rtl"> <head> <meta charset="UTF-8" /> <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <title>Restaurant Ordering System</title> <script src="https://cdn.tailwindcss.com"></script> <link rel="preconnect" href="https:
-
-pasted
-
-طيب عدل لي هذا ابي نفس تنسيق الاصلي بدون اي تعديل بالازرار والاشياء الثانهي
-
-Created a file, shared files
-عدّلت الصفحة على نفس ألوان وتنسيق المنيو الأصلي، وما غيرت أي نص ولا رابط ولا هيكل الأزرار:
-
-الألوان والخلفية: نفس ألوان المنيو (العنابي الداكن، البيج، الذهبي) مع الخلفية المنقطة.
-البطاقات: مثل بطاقات الأطباق، بحدود وظل وشريط علوي متدرج، وترتفع عند المرور عليها.
-الأزرار: نفس تدرج زر btn-order من الأسود إلى العنابي.
-الأيقونات وأسماء التقنيات: الأيقونات في دوائر داكنة بإطار ذهبي، وأسماء التقنيات بنفس شكل شارات الأقسام.
-الخطوط: Amiri للعناوين وTajawal للباقي، مثل المنيو.
-أبقيت الـ CSS داخل الملف نفسه عشان يشتغل بدون الاعتماد على styling.css.
-
-
-Index
-Code·HTML 
-
-<!DOCTYPE html> <html lang="ar" dir="rtl"> <head> <meta charset="UTF-8" /> <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <title>Restaurant Ordering System</title> <script src="https://cdn.tailwindcss.com"></script> <link rel="preconnect" href="https:
-
-pasted
-
-برضو عدل الكلمات ع حسب الاول مو ايطالي
-
-Edited a file, shared files
-عدّلت الكلمات لتطابق المنيو الأصلي بدل الطابع الإيطالي:
-
-الاسم: La Tavola صار Home Made، وتحته By Chef Mohammad بنفس لون العنوان الفرعي في المنيو.
-الشعار: "طعم إيطاليا على مائدتك 🇮🇹" صار "أطباق ونكهات عالمية محضّرة بعناية 🍽️"، وهي نفس صياغة وصف قائمتك.
-عنوان التبويب: صار Home Made | نظام الطلبات.
-باقي النصوص والأزرار والروابط ما تغيّرت.
-
-
-Index
-Code·HTML 
-
-Next time, try this in Cowork
-
-Hand off complex tasks for Claude to handle independently. Come back to finished results.
-
-
-
-Claude is AI and can make mistakes.
-
-
-Index · HTML
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
- 
-  <title>Home Made | نظام الطلبات</title>
- 
+
+  <title>Home Made | By Chef Mohammad</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
- 
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
- 
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
- 
+
   <style>
     :root {
-      --cream: #e3d5c9da;
+      --cream: #e3d5c9;
       --burgundy: #d1c9ca;
       --burgundy-dark: #35151B;
       --gray-brown: #e5d2c6;
       --black: #171516;
- 
       --cream-light: #a68a7e;
       --cream-dark: #421b1b;
- 
       --copper: #6D1824;
-      --copper-dark: #35151B;
- 
       --gold: #e1b165;
       --gold-light: #f7d69f;
- 
       --brown: #35151B;
       --brown-light: #0a0a08;
- 
       --border: #090707;
-      --danger: #6D1824;
     }
- 
+
     * {
       font-family: 'Tajawal', sans-serif;
       box-sizing: border-box;
     }
- 
+
     html {
       scroll-behavior: smooth;
     }
- 
+
     body {
       margin: 0;
       background: var(--cream);
@@ -195,15 +45,11 @@ Index · HTML
       background-image: radial-gradient(rgba(109, 24, 36, 0.055) 1px, transparent 1px);
       background-size: 24px 24px;
     }
- 
-    h1, h2, h3 {
+
+    h1, h2 {
       font-family: 'Amiri', serif;
     }
- 
-    .amiri {
-      font-family: 'Amiri', serif;
-    }
- 
+
     .hero {
       min-height: 100vh;
       display: flex;
@@ -211,12 +57,12 @@ Index · HTML
       justify-content: center;
       padding: 40px 20px;
     }
- 
+
     .container {
       width: 100%;
       max-width: 1000px;
     }
- 
+
     .brand-line {
       width: 55px;
       height: 3px;
@@ -224,9 +70,7 @@ Index · HTML
       margin: 0 auto 20px;
       border-radius: 999px;
     }
- 
-    /* ---------- CARDS (same as menu cards) ---------- */
- 
+
     .project-card {
       background: var(--cream-light);
       border: 1px solid var(--border);
@@ -236,12 +80,9 @@ Index · HTML
       overflow: hidden;
       display: block;
       color: var(--brown);
-      transition:
-        transform .22s ease,
-        box-shadow .22s ease,
-        border-color .22s ease;
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
     }
- 
+
     .project-card::before {
       content: "";
       position: absolute;
@@ -252,18 +93,17 @@ Index · HTML
       background: linear-gradient(90deg, var(--burgundy-dark), var(--burgundy), var(--burgundy-dark));
       opacity: .9;
     }
- 
+
     .project-card:hover {
       transform: translateY(-5px);
       border-color: var(--cream-dark);
       box-shadow: 0 14px 30px rgba(23, 21, 22, 0.13);
     }
- 
+
     .project-card h2 {
       color: var(--black);
-      font-family: 'Amiri', serif;
     }
- 
+
     .icon {
       width: 58px;
       height: 58px;
@@ -277,9 +117,7 @@ Index · HTML
       margin-bottom: 20px;
       box-shadow: 0 3px 10px rgba(23, 21, 22, 0.15);
     }
- 
-    /* ---------- BUTTON (same as .btn-order) ---------- */
- 
+
     .open-btn {
       display: inline-flex;
       align-items: center;
@@ -291,223 +129,98 @@ Index · HTML
       box-shadow: 0 3px 8px rgba(23, 21, 22, 0.12);
       transition: all .2s ease;
     }
- 
-    .project-card:hover .open-btn,
-    .open-btn:hover {
+
+    .project-card:hover .open-btn {
       background: linear-gradient(135deg, var(--burgundy-dark), var(--copper));
       border-color: var(--copper);
       transform: translateY(-1px);
       box-shadow: 0 5px 14px rgba(23, 21, 22, 0.2);
     }
- 
-    /* ---------- TECH CHIPS (same as category badge) ---------- */
- 
-    .tech {
-      display: inline-block;
-      padding: 5px 10px;
-      border-radius: 999px;
-      background: var(--burgundy-dark);
-      color: var(--gold-light);
-      border: 1px solid var(--border);
-      font-size: 12px;
-      margin: 3px;
-    }
- 
-    .olive-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--burgundy);
-      border-radius: 50%;
-      display: inline-block;
-      box-shadow: 0 0 0 4px rgba(109, 24, 36, 0.1);
-    }
- 
+
     ::-webkit-scrollbar {
       width: 8px;
       height: 8px;
     }
- 
+
     ::-webkit-scrollbar-track {
       background: var(--cream);
     }
- 
+
     ::-webkit-scrollbar-thumb {
       background: var(--gray-brown);
       border-radius: 9999px;
     }
- 
+
     ::-webkit-scrollbar-thumb:hover {
       background: var(--burgundy);
     }
   </style>
 </head>
- 
+
 <body>
- 
+
   <main class="hero">
- 
     <div class="container">
- 
-      <!-- Header -->
+
       <section class="text-center mb-12">
- 
+
         <div class="brand-line"></div>
- 
-        <p class="text-sm tracking-widest mb-3"
-           style="color:var(--brown-light)">
-          RESTAURANT ORDERING SYSTEM
-        </p>
- 
-        <h1 class="amiri text-6xl md:text-8xl font-bold mb-2"
+
+        <h1 class="text-6xl md:text-8xl font-bold mb-2"
             style="color:var(--black); letter-spacing:1px">
           Home Made
         </h1>
- 
-        <p class="text-sm md:text-base mb-4 mt-[-4px]"
-           style="color:var(--gold); letter-spacing:1px">
+
+        <p class="text-sm md:text-base mb-4"
+           style="color:var(--copper); letter-spacing:1px">
           By Chef Mohammad
         </p>
- 
+
         <p class="text-lg md:text-xl mb-5"
            style="color:var(--copper)">
           أطباق ونكهات عالمية محضّرة بعناية 🍽️
         </p>
- 
+
         <p class="max-w-2xl mx-auto text-sm md:text-base leading-8"
            style="color:var(--brown-light)">
-          نظام إلكتروني لطلبات المطاعم يتيح للعميل تصفح المنيو،
-          اختيار الأطباق وإرسال الطلب مباشرة إلى شاشة المطبخ.
+          تصفّح قائمتنا، اختر أطباقك، وأرسل طلبك مباشرة إلى المطبخ.
         </p>
- 
+
       </section>
- 
- 
+
       <section class="grid md:grid-cols-3 gap-5">
- 
-        <!-- Menu -->
-        <a
-          href="https://mhmd-rest.vercel.app/"
-          target="_blank"
-          class="project-card p-6 no-underline"
-        >
- 
-          <div class="icon">
-            🍝
-          </div>
- 
-          <h2 class="text-xl font-black mb-2">
-            المنيو
-          </h2>
- 
-          <p class="text-sm leading-7 mb-6"
-             style="color:var(--brown-light)">
+
+        <a href="https://mhmd-rest.vercel.app/" target="_blank" class="project-card p-6 no-underline">
+          <div class="icon">🍝</div>
+          <h2 class="text-xl font-black mb-2">المنيو</h2>
+          <p class="text-sm leading-7 mb-6" style="color:var(--brown-light)">
             تصفح الأطباق والأسعار، اختر الكمية وأرسل طلبك للمطبخ.
           </p>
- 
-          <span class="open-btn rounded-xl py-3 font-bold">
-            فتح المنيو →
-          </span>
- 
+          <span class="open-btn rounded-xl py-3 font-bold">فتح المنيو →</span>
         </a>
- 
- 
-        <!-- Kitchen -->
-        <a
-          href="https://mhmd-rest.vercel.app/kitchen.html"
-          target="_blank"
-          class="project-card p-6 no-underline"
-        >
- 
-          <div class="icon">
-            👨‍🍳
-          </div>
- 
-          <h2 class="text-xl font-black mb-2">
-            شاشة المطبخ
-          </h2>
- 
-          <p class="text-sm leading-7 mb-6"
-             style="color:var(--brown-light)">
+
+        <a href="https://mhmd-rest.vercel.app/kitchen.html" target="_blank" class="project-card p-6 no-underline">
+          <div class="icon">👨‍🍳</div>
+          <h2 class="text-xl font-black mb-2">شاشة المطبخ</h2>
+          <p class="text-sm leading-7 mb-6" style="color:var(--brown-light)">
             متابعة الطلبات وتحديث حالتها من الانتظار إلى التحضير ثم التسليم.
           </p>
- 
-          <span class="open-btn rounded-xl py-3 font-bold">
-            فتح شاشة المطبخ →
-          </span>
- 
+          <span class="open-btn rounded-xl py-3 font-bold">فتح شاشة المطبخ →</span>
         </a>
- 
- 
-        <a
-          href="https://mhmd-rest.vercel.app/admin-qrcodes.html"
-          target="_blank"
-          class="project-card p-6 no-underline"
-        >
- 
-          <div class="icon">
-            📱
-          </div>
- 
-          <h2 class="text-xl font-black mb-2">
-            QR الطاولات
-          </h2>
- 
-          <p class="text-sm leading-7 mb-6"
-             style="color:var(--brown-light)">
+
+        <a href="https://mhmd-rest.vercel.app/admin-qrcodes.html" target="_blank" class="project-card p-6 no-underline">
+          <div class="icon">📱</div>
+          <h2 class="text-xl font-black mb-2">QR الطاولات</h2>
+          <p class="text-sm leading-7 mb-6" style="color:var(--brown-light)">
             إنشاء روابط QR للطاولات بحيث يصل العميل إلى المنيو مباشرة.
           </p>
- 
-          <span class="open-btn rounded-xl py-3 font-bold">
-            فتح QR الطاولات →
-          </span>
- 
+          <span class="open-btn rounded-xl py-3 font-bold">فتح QR الطاولات →</span>
         </a>
- 
+
       </section>
- 
- 
-      <section class="text-center mt-12">
- 
-        <div class="flex items-center justify-center gap-3 mb-5">
-          <span class="olive-dot"></span>
- 
-          <span class="text-sm font-bold"
-                style="color:var(--brown-light)">
-            Built With
-          </span>
- 
-          <span class="olive-dot"></span>
-        </div>
- 
-        <div>
-          <span class="tech">HTML</span>
-          <span class="tech">CSS</span>
-          <span class="tech">JavaScript</span>
-          <span class="tech">Node.js</span>
-          <span class="tech">Express</span>
-          <span class="tech">Supabase</span>
-          <span class="tech">REST API</span>
-          <span class="tech">Vercel</span>
-        </div>
- 
-      </section>
- 
- 
-      <!-- Footer -->
-      <footer class="text-center mt-12 text-xs"
-              style="color:var(--brown-light)">
- 
-        <p>
-         Restaurant Ordering System
-        </p>
- 
- 
-      </footer>
- 
+
     </div>
- 
   </main>
- 
+
 </body>
 </html>
- 
