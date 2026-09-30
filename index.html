@@ -15,13 +15,26 @@
 
   <style>
     :root {
-      --olive: #3e6c54;
-      --olive-dark: #8b7358;
-      --cream: #fdefd3;
-      --paper: #f4ebd9;
-      --brown: #4a3b2c;
-      --brown-light: #8b7b67;
-      --border: #ded4c3;
+      --cream: #e3d5c9da;
+      --burgundy: #d1c9ca;
+      --burgundy-dark: #35151B;
+      --gray-brown: #e5d2c6;
+      --black: #171516;
+
+      --cream-light: #a68a7e;
+      --cream-dark: #421b1b;
+
+      --copper: #6D1824;
+      --copper-dark: #35151B;
+
+      --gold: #e1b165;
+      --gold-light: #f7d69f;
+
+      --brown: #35151B;
+      --brown-light: #0a0a08;
+
+      --border: #090707;
+      --danger: #6D1824;
     }
 
     * {
@@ -29,13 +42,20 @@
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
-      background:
-        radial-gradient(circle at 10% 10%, rgba(101,113,83,.10), transparent 30%),
-        radial-gradient(circle at 90% 90%, rgba(101,113,83,.08), transparent 30%),
-        var(--cream);
+      background: var(--cream);
       color: var(--brown);
+      background-image: radial-gradient(rgba(109, 24, 36, 0.055) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Amiri', serif;
     }
 
     .amiri {
@@ -58,24 +78,48 @@
     .brand-line {
       width: 55px;
       height: 3px;
-      background: var(--olive);
+      background: var(--copper);
       margin: 0 auto 20px;
       border-radius: 999px;
     }
 
+    /* ---------- CARDS (same as menu cards) ---------- */
+
     .project-card {
-      background: rgba(250,247,240,.82);
+      background: var(--cream-light);
       border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 5px 18px rgba(23, 21, 22, 0.07);
+      position: relative;
+      overflow: hidden;
+      display: block;
+      color: var(--brown);
       transition:
-        transform .2s ease,
-        box-shadow .2s ease,
-        border-color .2s ease;
+        transform .22s ease,
+        box-shadow .22s ease,
+        border-color .22s ease;
+    }
+
+    .project-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--burgundy-dark), var(--burgundy), var(--burgundy-dark));
+      opacity: .9;
     }
 
     .project-card:hover {
-      transform: translateY(-6px);
-      border-color: var(--olive);
-      box-shadow: 0 18px 40px rgba(74,59,44,.12);
+      transform: translateY(-5px);
+      border-color: var(--cream-dark);
+      box-shadow: 0 14px 30px rgba(23, 21, 22, 0.13);
+    }
+
+    .project-card h2 {
+      color: var(--black);
+      font-family: 'Amiri', serif;
     }
 
     .icon {
@@ -85,31 +129,44 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #e8e5d9;
+      background: var(--burgundy-dark);
+      border: 1px solid var(--gold-light);
       font-size: 27px;
       margin-bottom: 20px;
+      box-shadow: 0 3px 10px rgba(23, 21, 22, 0.15);
     }
+
+    /* ---------- BUTTON (same as .btn-order) ---------- */
 
     .open-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       width: 100%;
-      background: var(--olive);
-      color: white;
-      transition: background .2s ease;
+      background: linear-gradient(135deg, var(--black), var(--burgundy-dark));
+      color: var(--cream);
+      border: 1px solid var(--burgundy-dark);
+      box-shadow: 0 3px 8px rgba(23, 21, 22, 0.12);
+      transition: all .2s ease;
     }
 
+    .project-card:hover .open-btn,
     .open-btn:hover {
-      background: var(--olive-dark);
+      background: linear-gradient(135deg, var(--burgundy-dark), var(--copper));
+      border-color: var(--copper);
+      transform: translateY(-1px);
+      box-shadow: 0 5px 14px rgba(23, 21, 22, 0.2);
     }
+
+    /* ---------- TECH CHIPS (same as category badge) ---------- */
 
     .tech {
       display: inline-block;
       padding: 5px 10px;
       border-radius: 999px;
-      background: #ebe7dc;
-      color: var(--brown-light);
+      background: var(--burgundy-dark);
+      color: var(--gold-light);
+      border: 1px solid var(--border);
       font-size: 12px;
       margin: 3px;
     }
@@ -117,9 +174,28 @@
     .olive-dot {
       width: 8px;
       height: 8px;
-      background: var(--olive);
+      background: var(--burgundy);
       border-radius: 50%;
       display: inline-block;
+      box-shadow: 0 0 0 4px rgba(109, 24, 36, 0.1);
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--cream);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--gray-brown);
+      border-radius: 9999px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--burgundy);
     }
   </style>
 </head>
@@ -141,12 +217,12 @@
         </p>
 
         <h1 class="amiri text-6xl md:text-8xl font-bold mb-2"
-            style="color:var(--olive)">
+            style="color:var(--black); letter-spacing:1px">
           La Tavola
         </h1>
 
         <p class="text-lg md:text-xl mb-5"
-           style="color:var(--brown-light)">
+           style="color:var(--copper)">
           طعم إيطاليا على مائدتك 🇮🇹
         </p>
 
@@ -165,7 +241,7 @@
         <a
           href="https://mhmd-rest.vercel.app/"
           target="_blank"
-          class="project-card rounded-3xl p-6 no-underline"
+          class="project-card p-6 no-underline"
         >
 
           <div class="icon">
@@ -192,7 +268,7 @@
         <a
           href="https://mhmd-rest.vercel.app/kitchen.html"
           target="_blank"
-          class="project-card rounded-3xl p-6 no-underline"
+          class="project-card p-6 no-underline"
         >
 
           <div class="icon">
@@ -218,7 +294,7 @@
         <a
           href="https://mhmd-rest.vercel.app/admin-qrcodes.html"
           target="_blank"
-          class="project-card rounded-3xl p-6 no-underline"
+          class="project-card p-6 no-underline"
         >
 
           <div class="icon">
